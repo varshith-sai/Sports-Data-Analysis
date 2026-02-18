@@ -18,6 +18,8 @@ import MatchList from "./pages/MatchList";
 import MatchSetup from "./pages/MatchSetup";
 import MatchTagging from "./pages/MatchTagging";
 import "./index.css";
+import MatchSummary from "./pages/MatchSummary";
+
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
@@ -27,6 +29,8 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
         <Route path="/new" element={<MatchSetup />} />
         <Route path="/match/:matchId" element={<MatchTagging />} />
         <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="/match/:matchId/summary" element={<MatchSummary />} />
+
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

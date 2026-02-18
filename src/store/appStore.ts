@@ -23,6 +23,9 @@ type AppState = {
   undoLastEvent: (matchId: string, rallyId: string) => void;
 
   getCurrentRallySeq: (rallyId: string) => number;
+
+  importMatchBundle: (bundle: { match: Match; rallies: Rally[]; events: Event[] }) => void;
+
 };
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -30,6 +33,28 @@ export const useAppStore = create<AppState>((set, get) => ({
   rallies: [],
   events: [],
   activePlayer: "A",
+
+
+
+  importMatchBundle: (bundle) => {
+  // simplest: just insert if not already present
+  set((s) => {
+    const exists = s.matches.some((m) => m.id === bundle.match.id);
+    const matches = exists ? s.matches : [bundle.match, ...s.matches];
+
+    const ralliesToAdd = bundle.rallies.filter((r) => !s.rallies.some((x) => x.id === r.id));
+    const eventsToAdd = bundle.events.filter((e) => !s.events.some((x) => x.id === e.id));
+
+    return {
+      matches,
+      rallies: [...s.rallies, ...ralliesToAdd],
+      events: [...s.events, ...eventsToAdd],
+    };
+  });
+},
+
+
+
 
   createMatch: (playerA, playerB) => {
     const matchId = uuid();

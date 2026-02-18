@@ -7,6 +7,10 @@ import { useMemo } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useAppStore } from "../store/appStore";
 import type { PlayerId, ShotType, PointEnd } from "../types/models";
+import { buildMatchExport, downloadJson } from "../utils/exportMatch";
+
+
+
 
 const SHOTS: { key: ShotType; label: string }[] = [
   { key: "SERVE", label: "Serve" },
@@ -37,6 +41,19 @@ export default function MatchTagging() {
   const undoLastEvent = useAppStore((s) => s.undoLastEvent);
 
   const match = matches.find((m) => m.id === matchId);
+
+
+  const matchRallies = useMemo(
+  () => rallies.filter((r) => r.matchId === matchId),
+  [rallies, matchId]
+  );
+
+  const matchEvents = useMemo(
+  () => events.filter((e) => e.matchId === matchId),
+  [events, matchId]
+  );
+
+
 
   const currentRally = useMemo(() => {
     if (!matchId) return undefined;
@@ -85,7 +102,10 @@ export default function MatchTagging() {
           </p>
         </div>
         <Link to="/">← Matches</Link>
+        <Link to={`/match/${matchId}/summary`}>Summary</Link>
+
       </div>
+
 
       {/* Player Toggle */}
       <div style={{ display: "flex", gap: 10, margin: "14px 0" }}>
@@ -160,6 +180,16 @@ export default function MatchTagging() {
           ))}
         </ol>
       )}
+
+      <button
+        onClick={() => {
+          const payload = buildMatchExport(match, matchRallies, matchEvents);
+          downloadJson(`${match.playerA}-vs-${match.playerB}-${match.id}.json`, payload);
+          }}
+        style={{ padding: "8px 12px", cursor: "pointer" }}
+      >
+        Export JSON
+      </button>
     </div>
   );
 }
